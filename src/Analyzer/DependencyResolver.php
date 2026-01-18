@@ -16,12 +16,14 @@ class DependencyResolver
 
     /**
      * @param array<string> $visited
+     * @param array<string> $ignorePatterns
      */
     public function resolve(
         string $className,
         int $depth = 0,
         int $maxDepth = 5,
         array $visited = [],
+        array $ignorePatterns = [],
     ): DependencyNode {
         // 循環依存チェック
         if (in_array($className, $visited, true)) {
@@ -67,11 +69,17 @@ class DependencyResolver
             $dependencyClass = $type->getName();
             $resolvedClass = $this->resolveFromContainer($dependencyClass);
 
+            // ignoreパターンに一致する場合はスキップ
+            if ($this->shouldIgnore($resolvedClass, $ignorePatterns)) {
+                continue;
+            }
+
             $childNode = $this->resolve(
                 $resolvedClass,
                 $depth + 1,
                 $maxDepth,
                 $visited,
+                $ignorePatterns,
             );
 
             $node->addDependency($childNode);
@@ -110,5 +118,20 @@ class DependencyResolver
         }
 
         return $abstract;
+    }
+
+    /**
+     * @param array<string> $patterns
+     */
+    private function shouldIgnore(string $className, array $patterns): bool
+    {
+        foreach ($patterns as $pattern) {
+            $regex = str_replace('\*', '.*', preg_quote($pattern, '/'));
+            if (preg_match('/^' . $regex . '$/', $className)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

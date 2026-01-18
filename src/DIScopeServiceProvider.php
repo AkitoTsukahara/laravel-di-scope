@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DIScope;
 
 use DIScope\Analyzer\BindingExtractor;
+use DIScope\Analyzer\ClassScanner;
 use DIScope\Analyzer\DependencyResolver;
 use DIScope\Commands\AnalyseCommand;
 use DIScope\Commands\GraphCommand;
@@ -31,6 +32,8 @@ class DIScopeServiceProvider extends ServiceProvider
         $this->app->singleton(DependencyResolver::class, function ($app) {
             return new DependencyResolver($app);
         });
+
+        $this->app->singleton(ClassScanner::class);
 
         // Rules
         $this->app->singleton(RuleParser::class);

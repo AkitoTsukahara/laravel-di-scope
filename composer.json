@@ -1,0 +1,45 @@
+{
+    "name": "akito-tsukahara/laravel-di-scope",
+    "description": "Visualize and validate Laravel DI container bindings",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "dependency-injection",
+        "di",
+        "container",
+        "architecture"
+    ],
+    "autoload": {
+        "psr-4": {
+            "DIScope\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DIScope\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "illuminate/container": "^10.0|^11.0",
+        "illuminate/console": "^10.0|^11.0",
+        "illuminate/support": "^10.0|^11.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0|^11.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "DIScope\\DIScopeServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

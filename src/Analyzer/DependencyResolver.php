@@ -6,10 +6,20 @@ namespace DIScope\Analyzer;
 
 use Illuminate\Container\Container;
 use ReflectionClass;
+use ReflectionMethod;
 use ReflectionNamedType;
 
 class DependencyResolver
 {
+    /**
+     * メソッドインジェクションを分析する対象メソッド名
+     */
+    private const TARGET_METHODS = [
+        '__invoke',
+        'handle',
+        '__construct',
+    ];
+
     public function __construct(
         private readonly Container $container,
     ) {}
@@ -53,13 +63,61 @@ class DependencyResolver
         $visited[] = $className;
 
         $reflection = new ReflectionClass($className);
-        $constructor = $reflection->getConstructor();
 
-        if ($constructor === null) {
-            return $node;
+        // コンストラクタとターゲットメソッドの依存を収集
+        $dependencies = $this->collectDependencies($reflection, $ignorePatterns);
+
+        foreach ($dependencies as $dependencyClass) {
+            $childNode = $this->resolve(
+                $dependencyClass,
+                $depth + 1,
+                $maxDepth,
+                $visited,
+                $ignorePatterns,
+            );
+
+            $node->addDependency($childNode);
         }
 
-        foreach ($constructor->getParameters() as $param) {
+        return $node;
+    }
+
+    /**
+     * @param array<string> $ignorePatterns
+     * @return array<string>
+     */
+    private function collectDependencies(ReflectionClass $reflection, array $ignorePatterns): array
+    {
+        $dependencies = [];
+
+        foreach (self::TARGET_METHODS as $methodName) {
+            if (!$reflection->hasMethod($methodName)) {
+                continue;
+            }
+
+            $method = $reflection->getMethod($methodName);
+
+            // 継承元のメソッドは除外（自クラスで定義されたもののみ）
+            if ($method->getDeclaringClass()->getName() !== $reflection->getName()) {
+                continue;
+            }
+
+            $methodDependencies = $this->extractDependenciesFromMethod($method, $ignorePatterns);
+            $dependencies = array_merge($dependencies, $methodDependencies);
+        }
+
+        return array_unique($dependencies);
+    }
+
+    /**
+     * @param array<string> $ignorePatterns
+     * @return array<string>
+     */
+    private function extractDependenciesFromMethod(ReflectionMethod $method, array $ignorePatterns): array
+    {
+        $dependencies = [];
+
+        foreach ($method->getParameters() as $param) {
             $type = $param->getType();
 
             if (!$type instanceof ReflectionNamedType || $type->isBuiltin()) {
@@ -74,18 +132,10 @@ class DependencyResolver
                 continue;
             }
 
-            $childNode = $this->resolve(
-                $resolvedClass,
-                $depth + 1,
-                $maxDepth,
-                $visited,
-                $ignorePatterns,
-            );
-
-            $node->addDependency($childNode);
+            $dependencies[] = $resolvedClass;
         }
 
-        return $node;
+        return $dependencies;
     }
 
     private function resolveFromContainer(string $abstract): string

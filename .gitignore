@@ -10,7 +10,7 @@ composer.phar
 
 
 # IDE / エディタ
-.claude
+.claude/
 .idea/
 .vscode/
 *.swp

@@ -8,7 +8,7 @@ use DIScope\DIScopeServiceProvider;
 use Orchestra\Testbench\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 
-class AnalyseCommandTest extends TestCase
+class AnalyzeCommandTest extends TestCase
 {
     protected function getPackageProviders($app): array
     {
@@ -20,7 +20,7 @@ class AnalyseCommandTest extends TestCase
     {
         $this->app['config']->set('di-scope.rules', []);
 
-        $this->artisan('di:analyse')
+        $this->artisan('di:analyze')
             ->assertSuccessful();
     }
 
@@ -34,7 +34,7 @@ class AnalyseCommandTest extends TestCase
         ]);
 
         // 違反するバインディングがなければ成功
-        $this->artisan('di:analyse')
+        $this->artisan('di:analyze')
             ->assertSuccessful();
     }
 }

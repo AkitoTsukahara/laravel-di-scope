@@ -101,10 +101,10 @@ php artisan di:list --search=Repository
 
 ### ルール違反を検出
 ```bash
-php artisan di:analyse
+php artisan di:analyze
 
 # 特定の名前空間のみ検証
-php artisan di:analyse --focus="App\\Http\\Controllers"
+php artisan di:analyze --focus="App\\Http\\Controllers"
 ```
 
 出力例:
@@ -177,7 +177,7 @@ name: Architecture Check
 on: [push, pull_request]
 
 jobs:
-  analyse:
+  analyze:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -191,7 +191,7 @@ jobs:
         run: composer install
 
       - name: Check DI Architecture Rules
-        run: php artisan di:analyse
+        run: php artisan di:analyze
 ```
 
 違反があるとexit code 1が返されるため、CIが失敗します。

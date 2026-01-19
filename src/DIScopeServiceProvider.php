@@ -7,7 +7,7 @@ namespace DIScope;
 use DIScope\Analyzer\BindingExtractor;
 use DIScope\Analyzer\ClassScanner;
 use DIScope\Analyzer\DependencyResolver;
-use DIScope\Commands\AnalyseCommand;
+use DIScope\Commands\AnalyzeCommand;
 use DIScope\Commands\GraphCommand;
 use DIScope\Commands\ListBindingsCommand;
 use DIScope\Rules\RuleParser;
@@ -52,7 +52,7 @@ class DIScopeServiceProvider extends ServiceProvider
 
             $this->commands([
                 ListBindingsCommand::class,
-                AnalyseCommand::class,
+                AnalyzeCommand::class,
                 GraphCommand::class,
             ]);
         }

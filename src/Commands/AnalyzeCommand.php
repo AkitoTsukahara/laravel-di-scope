@@ -10,13 +10,13 @@ use DIScope\Rules\RuleParser;
 use DIScope\Rules\RuleValidator;
 use Illuminate\Console\Command;
 
-class AnalyseCommand extends Command
+class AnalyzeCommand extends Command
 {
-    protected $signature = 'di:analyse
+    protected $signature = 'di:analyze
         {--format=text : Output format (text, json)}
         {--focus= : Focus on specific namespace}';
 
-    protected $description = 'Analyse DI container bindings and check for rule violations';
+    protected $description = 'Analyze DI container bindings and check for rule violations';
 
     public function handle(
         DependencyResolver $resolver,
